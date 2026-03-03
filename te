@@ -1,0 +1,66 @@
+// ==UserScript==
+// @name         OLM ChatGPT Popup
+// @match        *://olm.vn/*
+// @grant        none
+// ==/UserScript==
+
+(function () {
+    let container = document.createElement("div");
+    container.style.position = "fixed";
+    container.style.bottom = "20px";
+    container.style.right = "20px";
+    container.style.width = "350px";
+    container.style.height = "500px";
+    container.style.zIndex = "999999";
+    container.style.background = "#fff";
+    container.style.border = "1px solid #ccc";
+    container.style.borderRadius = "10px";
+    container.style.boxShadow = "0 0 10px rgba(0,0,0,0.3)";
+    container.style.overflow = "hidden";
+
+    let header = document.createElement("div");
+    header.style.background = "#10a37f";
+    header.style.color = "white";
+    header.style.padding = "8px";
+    header.style.cursor = "move";
+    header.innerText = "ChatGPT";
+
+    let closeBtn = document.createElement("span");
+    closeBtn.innerText = " ✖";
+    closeBtn.style.float = "right";
+    closeBtn.style.cursor = "pointer";
+    closeBtn.onclick = () => container.remove();
+    header.appendChild(closeBtn);
+
+    let iframe = document.createElement("iframe");
+    iframe.src = "https://chat.openai.com";
+    iframe.style.width = "100%";
+    iframe.style.height = "calc(100% - 35px)";
+    iframe.style.border = "none";
+
+    container.appendChild(header);
+    container.appendChild(iframe);
+    document.body.appendChild(container);
+
+    // Drag move
+    let isDragging = false, offsetX, offsetY;
+
+    header.addEventListener("touchstart", function (e) {
+        isDragging = true;
+        offsetX = e.touches[0].clientX - container.offsetLeft;
+        offsetY = e.touches[0].clientY - container.offsetTop;
+    });
+
+    document.addEventListener("touchmove", function (e) {
+        if (isDragging) {
+            container.style.left = (e.touches[0].clientX - offsetX) + "px";
+            container.style.top = (e.touches[0].clientY - offsetY) + "px";
+            container.style.bottom = "auto";
+            container.style.right = "auto";
+        }
+    });
+
+    document.addEventListener("touchend", function () {
+        isDragging = false;
+    });
+})();
