@@ -1,5 +1,9 @@
 repeat task.wait() until game:IsLoaded()
 
+-- =========================
+-- TELEPORT AUTO RELOAD
+-- =========================
+
 local ScriptURL = "https://raw.githubusercontent.com/tufreescript/T-Hub/refs/heads/main/Ani"
 
 if queue_on_teleport then
@@ -36,6 +40,20 @@ local SettingsTab = Window:CreateTab("Settings", 4483362458)
 Rayfield:LoadConfiguration()
 
 -- =========================
+-- CONFIG (NEW SYSTEM)
+-- =========================
+
+local Config = {
+	Flags = {
+		AutoFarm = false,
+		AutoSkill = false,
+		AutoAwaken = false,
+		AutoReplay = false,
+		AntiAFK = false,
+	}
+}
+
+-- =========================
 -- SERVICES
 -- =========================
 
@@ -46,19 +64,24 @@ local player = Players.LocalPlayer
 local char = player.Character or player.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
 
+player.CharacterAdded:Connect(function(c)
+	char = c
+	hrp = c:WaitForChild("HumanoidRootPart")
+end)
+
 local remote = ReplicatedStorage.BridgeNet2.dataRemoteEvent
 
 local AwakenBridge = require(
 	game.ReplicatedStorage.Modules.BridgeNet2
 ).ReferenceBridge("Awaken")
 
+local EndBridge = require(
+	game.ReplicatedStorage.Modules.BridgeNet2
+).ReferenceBridge("EndScreen")
+
 -- =========================
 -- VARIABLES
 -- =========================
-
-_G.AutoFarm = false
-_G.AutoSkill = false
-_G.AutoAwaken = false
 
 local combo = 1
 local target = nil
@@ -66,17 +89,13 @@ local Paused = false
 local FarmHeight = 8
 
 -- =========================
--- SKILLS
+-- SKILLS (UNCHANGED)
 -- =========================
 
 local function Skill1()
-
 	local args = {
 		[1] = {
-			[1] = {
-				["Key"] = Enum.KeyCode.One,
-				["air"] = false
-			},
+			[1] = { ["Key"] = Enum.KeyCode.One, ["air"] = false },
 			[2] = "\26"
 		}
 	}
@@ -84,101 +103,56 @@ local function Skill1()
 	task.wait(0.25)
 	local args2 = {
 		[1] = {
-			[1] = "mobkills",
-			[2] = "\23",
-			[3] = "mobkills",
-			[4] = "\23",
-			[5] = "mobkills",
-			[6] = "\23",
-			[7] = "mobkills",
-			[8] = "\23",
-			[9] = "mobkills",
-			[10] = "\23"
+			"mobkills","\23","mobkills","\23","mobkills","\23","mobkills","\23","mobkills","\23"
 		}
 	}
 	remote:FireServer(unpack(args2))
 end
 
 local function Skill2()
-
 	local args = {
 		[1] = {
-			[1] = {
-				["Key"] = Enum.KeyCode.Two,
-				["air"] = false
-			},
+			[1] = { ["Key"] = Enum.KeyCode.Two, ["air"] = false },
 			[2] = "\26"
 		}
 	}
 	remote:FireServer(unpack(args))
 	task.wait(0.25)
+
 	local args2 = {
 		[1] = {
-			[1] = "mobkills",
-			[2] = "\23",
-			[3] = "mobkills",
-			[4] = "\23",
-			[5] = "mobkills",
-			[6] = "\23",
-			[7] = "mobkills",
-			[8] = "\23",
-			[9] = "mobkills",
-			[10] = "\23",
-			[11] = "mobkills",
-			[12] = "\23",
-			[13] = "mobkills",
-			[14] = "\23"
+			"mobkills","\23","mobkills","\23","mobkills","\23","mobkills","\23",
+			"mobkills","\23","mobkills","\23","mobkills","\23"
 		}
 	}
 	remote:FireServer(unpack(args2))
 end
 
 local function Skill3()
-
 	local args = {
 		[1] = {
-			[1] = {
-				["Key"] = Enum.KeyCode.Three,
-				["air"] = false
-			},
+			[1] = { ["Key"] = Enum.KeyCode.Three, ["air"] = false },
 			[2] = "\26"
 		}
 	}
 	remote:FireServer(unpack(args))
 	task.wait(0.25)
-	local args2 = {
-		[1] = {
-			[1] = "mobkills",
-			[2] = "\23"
-		}
-	}
-	remote:FireServer(unpack(args2))
+	remote:FireServer({{ "mobkills","\23" }})
 end
 
 local function SkillF()
-
 	local args = {
 		[1] = {
-			[1] = {
-				["Key"] = Enum.KeyCode.F,
-				["air"] = false
-			},
+			[1] = { ["Key"] = Enum.KeyCode.F, ["air"] = false },
 			[2] = "\26"
 		}
 	}
 	remote:FireServer(unpack(args))
 	task.wait(0.25)
-	local args2 = {
-		[1] = {
-			[1] = "mobkills",
-			[2] = "\23"
-		}
-	}
-	remote:FireServer(unpack(args2))
+	remote:FireServer({{ "mobkills","\23" }})
 end
 
 local function Awakening()
-
 	if player:FindFirstChild("Awakening")
 	and player.Awakening.Value >= 200 then
 		if not char:GetAttribute("stunned")
@@ -188,49 +162,48 @@ local function Awakening()
 	end
 end
 
-_G.AutoReplay = false
-
-local EndBridge = require(
-	game.ReplicatedStorage.Modules.BridgeNet2
-).ReferenceBridge("EndScreen")
-
 -- =========================
--- GUI
+-- TOGGLES (FIXED → CONFIG SYSTEM)
 -- =========================
 
 MainTab:CreateToggle({
 	Name = "Auto Farm",
 	CurrentValue = false,
+	Flag = "AutoFarm",
 	Callback = function(Value)
-		_G.AutoFarm = Value
+		Config.Flags.AutoFarm = Value
 	end,
 })
 
 MainTab:CreateToggle({
 	Name = "Auto Skill",
 	CurrentValue = false,
+	Flag = "AutoSkill",
 	Callback = function(Value)
-		_G.AutoSkill = Value
+		Config.Flags.AutoSkill = Value
 	end,
 })
 
 MainTab:CreateToggle({
 	Name = "Auto Awakening",
 	CurrentValue = false,
+	Flag = "AutoAwaken",
 	Callback = function(Value)
-		_G.AutoAwaken = Value
+		Config.Flags.AutoAwaken = Value
 	end,
 })
 
 SettingsTab:CreateToggle({
 	Name = "Anti AFK",
-	CurrentValue = true,
+	CurrentValue = false,
+	Flag = "AntiAFK",
 	Callback = function(Value)
-		_G.AntiAFK = Value
+		Config.Flags.AntiAFK = Value
+
 		if Value then
 			local vu = game:GetService("VirtualUser")
-			game:GetService("Players").LocalPlayer.Idled:Connect(function()
-				if _G.AntiAFK then
+			player.Idled:Connect(function()
+				if Config.Flags.AntiAFK then
 					vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
 					task.wait(1)
 					vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
@@ -243,8 +216,9 @@ SettingsTab:CreateToggle({
 SettingsTab:CreateToggle({
 	Name = "Auto Replay",
 	CurrentValue = false,
+	Flag = "AutoReplay",
 	Callback = function(Value)
-		_G.AutoReplay = Value
+		Config.Flags.AutoReplay = Value
 	end,
 })
 
@@ -262,23 +236,21 @@ SettingsTab:CreateSlider({
 SettingsTab:CreateButton({
 	Name = "Rejoin Server",
 	Callback = function()
-		game:GetService("TeleportService"):Teleport(
-			game.PlaceId,
-			player
-		)
+		game:GetService("TeleportService"):Teleport(game.PlaceId, player)
 	end,
 })
 
 -- =========================
--- AUTO SKILL
+-- AUTO SKILL LOOP
 -- =========================
 
 task.spawn(function()
 	while task.wait() do
-		if _G.AutoFarm
-		and _G.AutoSkill
+		if Config.Flags.AutoFarm
+		and Config.Flags.AutoSkill
 		and target
 		and not Paused then
+
 			Skill1()
 			task.wait(1)
 			Skill2()
@@ -297,10 +269,12 @@ end)
 
 task.spawn(function()
 	while task.wait() do
-		if _G.AutoFarm
-		and _G.AutoAwaken then
+		if Config.Flags.AutoFarm
+		and Config.Flags.AutoAwaken then
+
 			if player:FindFirstChild("Awakening")
 			and player.Awakening.Value >= 200 then
+
 				Paused = true
 				task.wait(1)
 				Awakening()
@@ -316,37 +290,34 @@ end)
 -- =========================
 
 task.spawn(function()
-
 	player.PlayerGui.ChildAdded:Connect(function(gui)
-
-		if _G.AutoReplay then
-
+		if Config.Flags.AutoReplay then
 			if gui.Name == "EndScreen"
 			or gui.Name == "EndScreenFail" then
-
 				task.wait(2)
-
 				EndBridge:Fire(1)
-
 			end
 		end
 	end)
-
 end)
 
 -- =========================
--- MAIN FARM
+-- MAIN FARM (FIXED NPC SAFE LOAD)
 -- =========================
 
 task.spawn(function()
+	local NPCFolder = workspace:WaitForChild("NPCs")
+
 	while task.wait() do
-		if _G.AutoFarm then
+		if Config.Flags.AutoFarm then
+
 			if not target
 			or not target.Parent
 			or not target:FindFirstChild("Humanoid")
 			or target.Humanoid.Health <= 0 then
+
 				target = nil
-				for _, mob in pairs(workspace.NPCs:GetChildren()) do
+				for _, mob in pairs(NPCFolder:GetChildren()) do
 					if mob:FindFirstChild("Humanoid")
 					and mob:FindFirstChild("HumanoidRootPart")
 					and mob.Humanoid.Health > 0 then
@@ -355,12 +326,15 @@ task.spawn(function()
 					end
 				end
 			end
+
 			if target and not Paused then
 				local mobhrp = target.HumanoidRootPart
 				local pos = mobhrp.Position + Vector3.new(0, FarmHeight, 0)
+
 				hrp.CFrame = CFrame.new(pos, mobhrp.Position)
 				hrp.AssemblyLinearVelocity = Vector3.zero
 				hrp.AssemblyAngularVelocity = Vector3.zero
+
 				local args = {
 					[1] = {
 						[1] = {
@@ -370,15 +344,19 @@ task.spawn(function()
 						[2] = "\12"
 					}
 				}
+
 				remote:FireServer(unpack(args))
+
 				combo += 1
-				if combo > 4 then
-					combo = 1
-				end
+				if combo > 4 then combo = 1 end
 			end
 		end
 	end
 end)
+
+-- =========================
+-- NOTIFY
+-- =========================
 
 Rayfield:Notify({
 	Title = "Anime Final Quest",
