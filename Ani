@@ -38,6 +38,13 @@ local MainTab = Window:CreateTab("Main", 4483362458)
 local SettingsTab = Window:CreateTab("Settings", 4483362458)
 
 Rayfield:LoadConfiguration()
+task.wait(0.5)
+
+for k, v in pairs(Rayfield.Flags) do
+	if Config.Flags[k] ~= nil then
+		Config.Flags[k] = v
+	end
+end
 
 -- =========================
 -- CONFIG (NEW SYSTEM)
