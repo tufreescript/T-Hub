@@ -1,5 +1,14 @@
-
 repeat task.wait() until game:IsLoaded()
+
+local ScriptURL = "https://raw.githubusercontent.com/tufreescript/T-Hub/refs/heads/main/Ani"
+
+if queue_on_teleport then
+	queue_on_teleport('loadstring(game:HttpGet("'..ScriptURL..'"))()')
+end
+
+if syn and syn.queue_on_teleport then
+	syn.queue_on_teleport('loadstring(game:HttpGet("'..ScriptURL..'"))()')
+end
 
 -- =========================
 -- RAYFIELD
@@ -11,14 +20,20 @@ local Window = Rayfield:CreateWindow({
 	Name = "Anime Final Quest",
 	LoadingTitle = "Anime Final Quest",
 	LoadingSubtitle = "by Tú",
+
 	ConfigurationSaving = {
-		Enabled = false
+		Enabled = true,
+		FolderName = "THub",
+		FileName = "AnimeFinalQuest"
 	},
+
 	KeySystem = false
 })
 
 local MainTab = Window:CreateTab("Main", 4483362458)
 local SettingsTab = Window:CreateTab("Settings", 4483362458)
+
+Rayfield:LoadConfiguration()
 
 -- =========================
 -- SERVICES
