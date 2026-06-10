@@ -20,7 +20,8 @@ end
 
 local Config = {
 	Flags = {
-		AutoFarm = true,
+		AutoFarmMob = true,
+             AutoFarmBoss = false,
 		AutoSkill = true,
 		AutoAwaken = true,
 		AutoReplay = true,
@@ -177,12 +178,22 @@ end
 -- =========================
 
 MainTab:CreateToggle({
-	Name = "Auto Farm",
+	Name = "Auto Farm Mob",
 	CurrentValue = true,
-	Flag = "AutoFarm",
+	Flag = "AutoFarmMob",
 	Callback = function(Value)
-		Config.Flags.AutoFarm = Value
-        Rayfield.Flags.AutoFarm = Value
+		Config.Flags.AutoFarmMob = Value
+		Rayfield.Flags.AutoFarmMob = Value
+	end,
+})
+
+MainTab:CreateToggle({
+	Name = "Auto Farm Boss",
+	CurrentValue = false,
+	Flag = "AutoFarmBoss",
+	Callback = function(Value)
+		Config.Flags.AutoFarmBoss = Value
+		Rayfield.Flags.AutoFarmBoss = Value
 	end,
 })
 
@@ -277,7 +288,7 @@ SettingsTab:CreateButton({
 
 task.spawn(function()
 	while task.wait() do
-		if Config.Flags.AutoFarm
+		if (Config.Flags.AutoFarmMob or Config.Flags.AutoFarmBoss)
 		and Config.Flags.AutoSkill
 		and target
 		and not Paused then
@@ -300,7 +311,7 @@ end)
 
 task.spawn(function()
 	while task.wait() do
-		if Config.Flags.AutoFarm
+		if (Config.Flags.AutoFarmMob or Config.Flags.AutoFarmBoss)
 		and Config.Flags.AutoAwaken then
 
 			if player:FindFirstChild("Awakening")
@@ -383,36 +394,70 @@ local function EnableSuperFastMode()
 end
 
 -- =========================
--- MAIN FARM (FIXED NPC SAFE LOAD)
+-- MAIN FARM
 -- =========================
 
 task.spawn(function()
+
 	local NPCFolder = workspace:WaitForChild("NPCs")
+	local BossFolder = workspace:WaitForChild("Boss")
 
 	while task.wait() do
-		if Config.Flags.AutoFarm then
 
+		if Config.Flags.AutoFarmMob
+		or Config.Flags.AutoFarmBoss then
+
+			-- CHECK TARGET
 			if not target
 			or not target.Parent
 			or not target:FindFirstChild("Humanoid")
 			or target.Humanoid.Health <= 0 then
 
 				target = nil
-				for _, mob in pairs(NPCFolder:GetChildren()) do
-					if mob:FindFirstChild("Humanoid")
-					and mob:FindFirstChild("HumanoidRootPart")
-					and mob.Humanoid.Health > 0 then
-						target = mob
-						break
+
+				local normalMob = nil
+				local bossMob = nil
+
+				-- FIND MOB
+				if Config.Flags.AutoFarmMob then
+					for _, mob in pairs(NPCFolder:GetChildren()) do
+
+						if mob:FindFirstChild("Humanoid")
+						and mob:FindFirstChild("HumanoidRootPart")
+						and mob.Humanoid.Health > 0 then
+
+							normalMob = mob
+							break
+						end
 					end
 				end
+
+				-- FIND BOSS
+				if Config.Flags.AutoFarmBoss then
+					for _, boss in pairs(BossFolder:GetChildren()) do
+
+						if boss:FindFirstChild("Humanoid")
+						and boss:FindFirstChild("HumanoidRootPart")
+						and boss.Humanoid.Health > 0 then
+
+							bossMob = boss
+							break
+						end
+					end
+				end
+
+				-- PRIORITY
+				target = bossMob or normalMob
 			end
 
+			-- ATTACK
 			if target and not Paused then
+
 				local mobhrp = target.HumanoidRootPart
 				local pos = mobhrp.Position + Vector3.new(0, FarmHeight, 0)
 
 				hrp.CFrame = CFrame.new(pos, mobhrp.Position)
+
 				hrp.AssemblyLinearVelocity = Vector3.zero
 				hrp.AssemblyAngularVelocity = Vector3.zero
 
@@ -429,12 +474,16 @@ task.spawn(function()
 				remote:FireServer(unpack(args))
 
 				combo += 1
-				if combo > 4 then combo = 1 end
+
+				if combo > 4 then
+					combo = 1
+				end
 			end
 		end
 	end
 end)
 
+						
 -- =========================
 -- NOTIFY
 -- =========================
