@@ -15,6 +15,20 @@ if syn and syn.queue_on_teleport then
 end
 
 -- =========================
+-- CONFIG (NEW SYSTEM)
+-- =========================
+
+local Config = {
+	Flags = {
+		AutoFarm = false,
+		AutoSkill = false,
+		AutoAwaken = false,
+		AutoReplay = false,
+		AntiAFK = false,
+	}
+}
+
+-- =========================
 -- RAYFIELD
 -- =========================
 
@@ -38,27 +52,15 @@ local MainTab = Window:CreateTab("Main", 4483362458)
 local SettingsTab = Window:CreateTab("Settings", 4483362458)
 
 Rayfield:LoadConfiguration()
-task.wait(0.5)
+task.wait(0.3)
 
-for k, v in pairs(Rayfield.Flags) do
-	if Config.Flags[k] ~= nil then
-		Config.Flags[k] = v
+if Rayfield.Flags then
+	for k, v in pairs(Config.Flags) do
+		if Rayfield.Flags[k] ~= nil then
+			Config.Flags[k] = Rayfield.Flags[k]
+		end
 	end
 end
-
--- =========================
--- CONFIG (NEW SYSTEM)
--- =========================
-
-local Config = {
-	Flags = {
-		AutoFarm = false,
-		AutoSkill = false,
-		AutoAwaken = false,
-		AutoReplay = false,
-		AntiAFK = false,
-	}
-}
 
 -- =========================
 -- SERVICES
@@ -179,6 +181,7 @@ MainTab:CreateToggle({
 	Flag = "AutoFarm",
 	Callback = function(Value)
 		Config.Flags.AutoFarm = Value
+        Rayfield.Flags.AutoFarm = Value
 	end,
 })
 
@@ -188,6 +191,7 @@ MainTab:CreateToggle({
 	Flag = "AutoSkill",
 	Callback = function(Value)
 		Config.Flags.AutoSkill = Value
+        Rayfield.Flags.AutoSkill = Value
 	end,
 })
 
@@ -197,6 +201,7 @@ MainTab:CreateToggle({
 	Flag = "AutoAwaken",
 	Callback = function(Value)
 		Config.Flags.AutoAwaken = Value
+        Rayfield.Flags.AutoAwaken = Value
 	end,
 })
 
@@ -205,7 +210,8 @@ SettingsTab:CreateToggle({
 	CurrentValue = false,
 	Flag = "AntiAFK",
 	Callback = function(Value)
-		Config.Flags.AntiAFK = Value
+	Config.Flags.AntiAFK = Value
+     Rayfield.Flags.AntiAFK = Value
 
 		if Value then
 			local vu = game:GetService("VirtualUser")
@@ -226,6 +232,7 @@ SettingsTab:CreateToggle({
 	Flag = "AutoReplay",
 	Callback = function(Value)
 		Config.Flags.AutoReplay = Value
+        Rayfield.Flags.AutoReplay = Value
 	end,
 })
 
