@@ -177,7 +177,7 @@ end
 
 MainTab:CreateToggle({
 	Name = "Auto Farm",
-	CurrentValue = false,
+	CurrentValue = true,
 	Flag = "AutoFarm",
 	Callback = function(Value)
 		Config.Flags.AutoFarm = Value
@@ -187,7 +187,7 @@ MainTab:CreateToggle({
 
 MainTab:CreateToggle({
 	Name = "Auto Skill",
-	CurrentValue = false,
+	CurrentValue = true,
 	Flag = "AutoSkill",
 	Callback = function(Value)
 		Config.Flags.AutoSkill = Value
@@ -197,7 +197,7 @@ MainTab:CreateToggle({
 
 MainTab:CreateToggle({
 	Name = "Auto Awakening",
-	CurrentValue = false,
+	CurrentValue = true,
 	Flag = "AutoAwaken",
 	Callback = function(Value)
 		Config.Flags.AutoAwaken = Value
@@ -207,7 +207,7 @@ MainTab:CreateToggle({
 
 SettingsTab:CreateToggle({
 	Name = "Anti AFK",
-	CurrentValue = false,
+	CurrentValue = true,
 	Flag = "AntiAFK",
 	Callback = function(Value)
 	Config.Flags.AntiAFK = Value
@@ -228,7 +228,7 @@ SettingsTab:CreateToggle({
 
 SettingsTab:CreateToggle({
 	Name = "Auto Replay",
-	CurrentValue = false,
+	CurrentValue = true,
 	Flag = "AutoReplay",
 	Callback = function(Value)
 		Config.Flags.AutoReplay = Value
