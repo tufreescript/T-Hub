@@ -20,11 +20,11 @@ end
 
 local Config = {
 	Flags = {
-		AutoFarm = false,
-		AutoSkill = false,
-		AutoAwaken = false,
-		AutoReplay = false,
-		AntiAFK = false,
+		AutoFarm = true,
+		AutoSkill = true,
+		AutoAwaken = true,
+		AutoReplay = true,
+		AntiAFK = true,
 	}
 }
 
@@ -52,14 +52,14 @@ local MainTab = Window:CreateTab("Main", 4483362458)
 local SettingsTab = Window:CreateTab("Settings", 4483362458)
 
 Rayfield:LoadConfiguration()
-task.wait(0.3)
 
-if Rayfield.Flags then
-	for k, v in pairs(Config.Flags) do
-		if Rayfield.Flags[k] ~= nil then
-			Config.Flags[k] = Rayfield.Flags[k]
-		end
+task.wait(0.2)
+
+for k, v in pairs(Config.Flags) do
+	if Rayfield.Flags[k] == nil then
+		Rayfield.Flags[k] = v
 	end
+	Config.Flags[k] = Rayfield.Flags[k]
 end
 
 -- =========================
