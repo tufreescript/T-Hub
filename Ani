@@ -233,6 +233,7 @@ SettingsTab:CreateToggle({
 	Flag = "SuperFastMode",
 	Callback = function(Value)
 		Config.Flags.SuperFastMode = Value
+        Rayfield.Flags.SuperFastMode = Value
 
 		if Value then
 			EnableSuperFastMode()
@@ -315,6 +316,26 @@ task.spawn(function()
 	end
 end)
 
+local function DisableSuperFastMode()
+	local Lighting = game:GetService("Lighting")
+
+	Lighting.GlobalShadows = true
+	Lighting.FogEnd = 100000
+	Lighting.Brightness = 2
+
+	for _, v in pairs(workspace:GetDescendants()) do
+		if v:IsA("ParticleEmitter")
+		or v:IsA("Trail")
+		or v:IsA("Smoke") then
+			v.Enabled = true
+		end
+
+		if v:IsA("Decal") then
+			v.Transparency = 0
+		end
+	end
+end
+
 -- =========================
 -- AUTO REPLAY
 -- =========================
@@ -332,74 +353,31 @@ task.spawn(function()
 end)
 
 local function EnableSuperFastMode()
-
-	-- 🔻 Graphics thấp nhất
-	settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
-
-	-- 🔻 Lighting tối giản
+	-- Lighting tối giản
 	local Lighting = game:GetService("Lighting")
+
 	Lighting.GlobalShadows = false
 	Lighting.FogEnd = 1e10
 	Lighting.Brightness = 1
-	Lighting.EnvironmentDiffuseScale = 0
-	Lighting.EnvironmentSpecularScale = 0
 
-	-- 🔻 Tắt toàn bộ post effects
+	-- Xoá hiệu ứng post processing
 	for _, v in pairs(Lighting:GetChildren()) do
 		if v:IsA("PostEffect") then
 			v.Enabled = false
 		end
 	end
 
-	-- 🔻 Tắt VFX toàn map
+	-- Xoá particles / effects trong map
 	for _, v in pairs(workspace:GetDescendants()) do
-
 		if v:IsA("ParticleEmitter")
 		or v:IsA("Trail")
 		or v:IsA("Smoke")
-		or v:IsA("Fire") then
+		or v:IsA("Explosion") then
 			v.Enabled = false
 		end
 
-		if v:IsA("Explosion") then
-			v.Visible = false
-		end
-
-		if v:IsA("Decal") or v:IsA("Texture") then
+		if v:IsA("Decal") then
 			v.Transparency = 1
-		end
-	end
-
-	-- 🔻 Tắt water reflection (nếu có)
-	workspace.Terrain.WaterWaveSize = 0
-	workspace.Terrain.WaterWaveSpeed = 0
-	workspace.Terrain.WaterReflectance = 0
-
-	-- 🔻 Giảm physics load
-	settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
-end
-
-local function DisableSuperFastMode()
-
-	settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
-
-	local Lighting = game:GetService("Lighting")
-	Lighting.GlobalShadows = true
-	Lighting.FogEnd = 100000
-	Lighting.Brightness = 2
-	Lighting.EnvironmentDiffuseScale = 1
-	Lighting.EnvironmentSpecularScale = 1
-
-	for _, v in pairs(workspace:GetDescendants()) do
-		if v:IsA("ParticleEmitter")
-		or v:IsA("Trail")
-		or v:IsA("Smoke")
-		or v:IsA("Fire") then
-			v.Enabled = true
-		end
-
-		if v:IsA("Decal") or v:IsA("Texture") then
-			v.Transparency = 0
 		end
 	end
 end
